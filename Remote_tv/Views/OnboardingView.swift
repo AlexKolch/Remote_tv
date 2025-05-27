@@ -4,7 +4,6 @@
 //
 //  Created by Алексей Колыченков on 25.05.2025.
 //
-
 import SwiftUI
 
 struct OnboardingView: View {
@@ -36,11 +35,32 @@ struct OnboardingView: View {
                     .onAppear {
                         vm.requestAppReview()
                     }
+                case 3:
+                    ZStack(alignment: .top) {
+                        fourthOnboard
+                            .overlay(alignment: .topTrailing) {
+                                Image(systemName: "xmark")
+                                    .resizable()
+                                    .frame(width: 12.73, height: 12.73)
+                                    .bold()
+                                    .foregroundStyle(.white)
+                                    .frame(width: 56, height: 56, alignment: .center)
+                                    .offset(x: -5, y: -12)
+                            }
+                            .padding(.top, 12.5)
+                            .padding(.horizontal, 9)
+                        
+                        OnboardingSheet(onboardingState: $onboardingState, title: "A must for Smart TV", description: "Subscribe to unlock all the features,\n just $4.99/week")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity ,alignment: .bottom)
+                    }
 
+                    
+                    
                 default:
                     RoundedRectangle(cornerRadius: 25.0)
                         .foregroundColor(.green)
                     }
+          
         }
         .background(LinearGradient.addLinerGradient())
         .ignoresSafeArea(edges: .bottom)
@@ -86,6 +106,19 @@ private extension OnboardingView {
                 .scaleEffect(0.88)
         }
     }
+    
+    var fourthOnboard: some View {
+        ZStack(alignment: .top) {
+            Image(.tvLG)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 356, height: 216)
+            Image(.iPhoneHand)
+                .resizable()
+                .scaledToFit()
+                .offset(x: -10, y: -65)
+        }
+    }
 }
 
 struct OnboardingSheet: View {
@@ -111,7 +144,7 @@ struct OnboardingSheet: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                 
-                if onboardingState == 4 {
+                if onboardingState == 3 {
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(.bglevel2)
@@ -147,7 +180,7 @@ struct OnboardingSheet: View {
                
                 }
             }
-            
+
             
             Button {
                 handleNextButtonPressed()
@@ -179,16 +212,54 @@ struct OnboardingSheet: View {
             }
             
         }
-        .frame(height: onboardingState < 4 ? 279 : 358)
-//        .background(.white)
+        .frame(height: onboardingState < 3 ? 279 : 358)
         .padding(.top, 32)
         .padding([.horizontal, .bottom], 16)
         .background(Color.bglevel1)
         .clipShape(.rect(cornerRadii: .init(topLeading: 24, topTrailing: 24)))
+        
+        .overlay(alignment: .top) {
+            blurView
+                .offset(y: -70)
+                .padding(.horizontal, 16)
+        }
     }
 }
 
 extension OnboardingSheet {
+    
+   private var blurView: some View {
+       ZStack {
+           Rectangle()
+               .fill(Color.white.opacity(0.1))
+               .frame(height: 68)
+               .background(
+                GlassView(removeEffects: true)
+                    .blur(radius: 20, opaque: true)
+               )
+               .clipShape(.buttonBorder)
+
+           HStack(spacing: 12.0) {
+               Image(.premium)
+                   .resizable()
+                   .frame(width: 24, height: 24)
+                 
+               Text("Access to sleep timer, touchpad and multimedia controller")
+                   .frame(width: 275)
+                   .font(FontBuilder.description.font)
+                   .tracking(FontBuilder.description.tracking)
+                   .lineSpacing(1.4)
+//                   .environment(\._lineHeightMultiple, 1.4) //РАЗОБРАТЬСЯ С ТВ!!!!!!!!!!!!!!!!!!!!
+                   .foregroundStyle(.white)
+                   .multilineTextAlignment(.center)
+                   
+           }
+           .frame(maxWidth: .infinity)
+           .padding(.horizontal, 16)
+       }
+   }
+    
+    
     func handleNextButtonPressed() {
         // GO TO NEXT SECTION
         if onboardingState == 5 {

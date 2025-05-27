@@ -47,6 +47,8 @@ extension FontBuilder {
     static let infoBtn = FontBuilder(customFont: .inter, fontSize: 12, letterSpacing: 0.02, lineHeight: 17)
 }
 
+
+
 struct FontWithLineHeight: ViewModifier {
     let font: CustomFonts
     let fontSize: Double
