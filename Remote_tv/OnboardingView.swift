@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @State var onboardingState: Int = 0
+    @EnvironmentObject var vm: ViewModel
     
     var body: some View {
         VStack() {
@@ -16,87 +17,75 @@ struct OnboardingView: View {
                 case 0:
                     firstOnboard
                         .padding(.top, 24)
-                    //                    .background(.blue)
+                    Spacer()
+                    OnboardingSheet(onboardingState: $onboardingState, title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
                 case 1:
                     secondOnboard
-//                        .ignoresSafeArea(edges: .bottom)
+                        .padding(.top, 30)
+                    Spacer()
+                        OnboardingSheet(onboardingState: $onboardingState, title: "Your feedback matters", description: "Your feedback is highly appreciated to make your experience smoother")
+                case 2:
+                    ZStack(alignment: .top) {
+                        thirdOnboard
+                            .padding(.top, 17)
+                            .padding(.horizontal, 33)
+                
+                        OnboardingSheet(onboardingState: $onboardingState, title: "Remote always at hand", description: "No more wasting time looking for the remote control over and over again")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity ,alignment: .bottom)
+                    }
+                    .onAppear {
+                        vm.requestAppReview()
+                    }
+
                 default:
                     RoundedRectangle(cornerRadius: 25.0)
                         .foregroundColor(.green)
-                }
-        
-            
-            //Sheet
-//            VStack {
-//                Spacer()
-//                OnboardingSheet(onboardingState: $onboardingState, title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
-//
-//            }
-//            .ignoresSafeArea(edges: .bottom)
+                    }
         }
         .background(LinearGradient.addLinerGradient())
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
 #Preview {
     OnboardingView()
-//    OnboardingSheet(onboardingState: .constant(0), title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
 }
 
 private extension OnboardingView {
     
-//    var firstOnboard: some View {
-//        ZStack(alignment: .top) {
-//            Image(.tv)
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .frame(width: 470, height: 252)
-//            Image(.phoneRemote)
-//                .resizable()
-//                .aspectRatio(contentMode: .fill)
-//                .frame(width: 335, height: 340)
-//                .offset(y: 149)
-//        }
-//    }
     var firstOnboard: some View {
-        VStack {
-            ZStack(alignment: .top) {
-                Image(.tv)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 470, height: 252)
-                Image(.phoneRemote)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 335, height: 340)
-                    .offset(y: 149)
-            }
-            Spacer()
-            OnboardingSheet(onboardingState: $onboardingState, title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
-        }
-        .ignoresSafeArea()
-      
-    }
-    
-//    var secondOnboard: some View {
-//        VStack {
-//            Image(.secondBoard)
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//        }
-//    }
-    var secondOnboard: some View {
-        VStack {
-            Image(.secondBoard)
+        ZStack(alignment: .top) {
+            Image(.tv)
                 .resizable()
-                .frame(width: 320, height: 361)
                 .aspectRatio(contentMode: .fit)
-            Spacer()
-            OnboardingSheet(onboardingState: $onboardingState, title: "Your feedback matters", description: "Your feedback is highly appreciated to make your experience smoother")
+                .frame(width: 470, height: 252)
+            Image(.phoneRemote)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 335, height: 340)
+                .offset(y: 149)
         }
-        .ignoresSafeArea()
     }
     
+    var secondOnboard: some View {
+        Image(.secondBoard)
+            .resizable()
+            .frame(width: 320, height: 361)
+            .aspectRatio(contentMode: .fit)
+    }
+    
+    var thirdOnboard: some View {
+        ZStack(alignment: .top) {
+            Image(.thirdBoard)
+                .resizable()
+                .scaledToFit()
+            Image(.mockup)
+                .resizable()
+                .scaledToFit()
+                .offset(y: -16)
+                .scaleEffect(0.88)
+        }
+    }
 }
 
 struct OnboardingSheet: View {
@@ -110,23 +99,24 @@ struct OnboardingSheet: View {
     var body: some View {
         VStack(spacing: 24.0) {
             VStack(alignment: .center, spacing: 16.0) {
-                Text("Smart TV control")
+                Text(title)
                     .fontWithLineHeight(font: .inter, fontSize: 28, letterSpacing: 0.02, lineHeight: 34)
                     .bold()
                     .foregroundStyle(.white)
                 
-                Text("Easiest way to control your smart TV with your phone")
+                Text(description)
                     .font(FontBuilder.description.font)
                     .tracking(FontBuilder.description.tracking)
                     .lineSpacing(1.4)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
+                
                 if onboardingState == 4 {
-                    
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(.bglevel2)
-                                .frame(maxWidth: .infinity, maxHeight: 63)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 63)
                             
                             HStack {
                                 Toggle(isOn: $toggleIsOn) {
@@ -146,6 +136,7 @@ struct OnboardingSheet: View {
                                         }
                                         .padding(.vertical, 12)
                                         .frame(maxWidth: .infinity, alignment: .leading)
+                                        .frame(height: 39)
                                     }
                                 }
                                 .tint(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
@@ -188,6 +179,8 @@ struct OnboardingSheet: View {
             }
             
         }
+        .frame(height: onboardingState < 4 ? 279 : 358)
+//        .background(.white)
         .padding(.top, 32)
         .padding([.horizontal, .bottom], 16)
         .background(Color.bglevel1)
