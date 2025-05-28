@@ -11,6 +11,7 @@ import StoreKit
 
 final class ViewModel: ObservableObject {
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
+    @Published var isLoading: Bool = false
    
     @MainActor func requestAppReview() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -18,5 +19,9 @@ final class ViewModel: ObservableObject {
                 } else {
                     //Сделать в будущем. Если не получилось – открываем App Store
                 }
+    }
+    
+    func startPayment() {
+        isLoading = true
     }
 }

@@ -7,7 +7,8 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @State var onboardingState: Int = 0
+    @State var onboardingState: Int = 2
+    @State var toggleIsOn: Bool = false
     @EnvironmentObject var vm: ViewModel
     
     var body: some View {
@@ -17,19 +18,21 @@ struct OnboardingView: View {
                     firstOnboard
                         .padding(.top, 24)
                     Spacer()
-                    OnboardingSheet(onboardingState: $onboardingState, title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
+                    OnboardingSheet(toggleIsOn: $toggleIsOn, onboardingState: $onboardingState, title: "Smart TV control", description: "Easiest way to control your smart TV with your phone")
                 case 1:
                     secondOnboard
                         .padding(.top, 30)
                     Spacer()
-                        OnboardingSheet(onboardingState: $onboardingState, title: "Your feedback matters", description: "Your feedback is highly appreciated to make your experience smoother")
+                    OnboardingSheet(toggleIsOn: $toggleIsOn, onboardingState: $onboardingState, title: "Your feedback matters", description: "Your feedback is highly appreciated to make your experience smoother")
                 case 2:
                     ZStack(alignment: .top) {
                         thirdOnboard
                             .padding(.top, 17)
                             .padding(.horizontal, 33)
                 
-                        OnboardingSheet(onboardingState: $onboardingState, title: "Remote always at hand", description: "No more wasting time looking for the remote control over and over again")
+                        OnboardingSheet(toggleIsOn: $toggleIsOn, onboardingState: $onboardingState,
+                                        title: "Remote always at hand",
+                                        description: "No more wasting time looking for the remote control over and over again")
                             .frame(maxWidth: .infinity, maxHeight: .infinity ,alignment: .bottom)
                     }
                     .onAppear {
@@ -38,23 +41,25 @@ struct OnboardingView: View {
                 case 3:
                     ZStack(alignment: .top) {
                         fourthOnboard
-                            .overlay(alignment: .topTrailing) {
-                                Image(systemName: "xmark")
-                                    .resizable()
-                                    .frame(width: 12.73, height: 12.73)
-                                    .bold()
-                                    .foregroundStyle(.white)
-                                    .frame(width: 56, height: 56, alignment: .center)
-                                    .offset(x: -5, y: -12)
-                            }
                             .padding(.top, 12.5)
                             .padding(.horizontal, 9)
+
+                        if !vm.isLoading {
+                            Image(systemName: "xmark")
+                                .resizable()
+                                .frame(width: 12.73, height: 12.73)
+                                .bold()
+                                .foregroundStyle(.white)
+                                .frame(width: 56, height: 56, alignment: .center)
+                                .offset(x: 158)
+                        }
                         
-                        OnboardingSheet(onboardingState: $onboardingState, title: "A must for Smart TV", description: "Subscribe to unlock all the features,\n just $4.99/week")
+                        OnboardingSheet(toggleIsOn: $toggleIsOn, onboardingState: $onboardingState,
+                                        title: "A must for Smart TV",
+                                        description: toggleIsOn == false ? "Subscribe to unlock all the features,\n just $4.99/week" : "Subscribe to unlock all the features,\n just $4.99/week + 3-day free trial")
                             .frame(maxWidth: .infinity, maxHeight: .infinity ,alignment: .bottom)
                     }
 
-                    
                     
                 default:
                     RoundedRectangle(cornerRadius: 25.0)
@@ -123,7 +128,8 @@ private extension OnboardingView {
 
 struct OnboardingSheet: View {
     @EnvironmentObject var vm: ViewModel
-    @State var toggleIsOn: Bool = false
+    @State var isPaywall = false
+    @Binding var toggleIsOn: Bool
     @Binding var onboardingState: Int
     
     var title: String
@@ -175,30 +181,49 @@ struct OnboardingSheet: View {
                                 .tint(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
                                 .padding(.trailing, 12)
                                 .padding(.leading, 16)
+                                
                             }
                         }
                
                 }
             }
 
-            
-            Button {
-                handleNextButtonPressed()
-            } label: {
-                Text(toggleIsOn ? "Try free" : "Continue")
-                    .foregroundStyle(.white)
-                    .font(.inter, size: 18).bold()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 64)
-                    .background(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
-                    .clipShape(.rect(cornerRadius: 12))
+            if isPaywall {
+                Image(.loader)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                    .rotationEffect(Angle(degrees: vm.isLoading ? 360 : 0), anchor: .center)
+                    .onAppear {
+                        withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                            vm.startPayment()
+                        }
+                    }
+            } else {
+                Button {
+                    if onboardingState == 3 {
+                        isPaywall.toggle()
+                    } else {
+                        handleNextButtonPressed()
+                    }
+                } label: {
+                    Text(toggleIsOn ? "Try free" : "Continue")
+                        .foregroundStyle(.white)
+                        .font(.inter, size: 18).bold()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 64)
+                        .background(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
+                        .clipShape(.rect(cornerRadius: 12))
+                }
             }
+         
             
             HStack() {
                 Group {
-                    Text("Privacy Policy")
+                    Link("Privacy Policy",
+                         destination: URL(string: "https://docs.google.com/document/d/1wY6VO-Xg6DStAav4ywjC236OuebpvqHqjIliZdMz9LE/edit?usp=sharing")!)
                     Text("Restore")
-                    Text("Terms of Use")
+                    Link("Terms of Service",
+                         destination: URL(string: "https://docs.google.com/document/d/1HOGEoKmiRYtQK_7kFne9oKCUmijPSSbhrYnzS1hzsAo/edit?usp=sharing")!)
                 }
                 .font(FontBuilder.infoBtn.font)
                 .tracking(FontBuilder.infoBtn.tracking)
@@ -217,11 +242,12 @@ struct OnboardingSheet: View {
         .padding([.horizontal, .bottom], 16)
         .background(Color.bglevel1)
         .clipShape(.rect(cornerRadii: .init(topLeading: 24, topTrailing: 24)))
-        
         .overlay(alignment: .top) {
-            blurView
-                .offset(y: -70)
-                .padding(.horizontal, 16)
+            if onboardingState == 3 {
+                blurView
+                    .offset(y: -70)
+                    .padding(.horizontal, 16)
+            }
         }
     }
 }
@@ -262,7 +288,7 @@ extension OnboardingSheet {
     
     func handleNextButtonPressed() {
         // GO TO NEXT SECTION
-        if onboardingState == 5 {
+        if onboardingState == 4 {
             signIn()
         } else {
             withAnimation {
