@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingView: View {
     @State var onboardingState: Int = 3
     @State var toggleIsOn: Bool = false
-    @EnvironmentObject var vm: ViewModel
+    @EnvironmentObject var vm: IntroViewModel
     
     var body: some View {
         VStack() {
@@ -72,9 +72,9 @@ struct OnboardingView: View {
     }
 }
 
-#Preview {
-    OnboardingView()
-}
+//#Preview {
+//    OnboardingView()
+//}
 
 private extension OnboardingView {
     
@@ -127,7 +127,7 @@ private extension OnboardingView {
 }
 
 struct OnboardingSheet: View {
-    @EnvironmentObject var vm: ViewModel
+    @EnvironmentObject var vm: IntroViewModel
     @State var isPaywall = false
     @Binding var toggleIsOn: Bool
     @Binding var onboardingState: Int

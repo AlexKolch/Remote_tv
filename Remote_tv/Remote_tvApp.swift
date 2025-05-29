@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct Remote_tvApp: App {
-    @StateObject var vm = ViewModel()
+    @StateObject var vm = IntroViewModel()
     
     var body: some Scene {
         WindowGroup {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct IntroView: View {
-    @EnvironmentObject var vm: ViewModel
+    @EnvironmentObject var vm: IntroViewModel
 //    @AppStorage("signed_in") var currentUserSignedIn: Bool = false
     
     var body: some View {
@@ -27,5 +27,5 @@ struct IntroView: View {
 
 #Preview {
     IntroView()
-        .environmentObject(ViewModel())
+        .environmentObject(IntroViewModel())
 }

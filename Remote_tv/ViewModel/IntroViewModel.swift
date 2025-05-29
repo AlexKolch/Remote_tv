@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import StoreKit
 
-final class ViewModel: ObservableObject {
+final class IntroViewModel: ObservableObject {
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
     @Published var isLoading: Bool = false
     

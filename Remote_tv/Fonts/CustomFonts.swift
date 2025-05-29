@@ -66,7 +66,7 @@ struct FontWithLineHeight: ViewModifier {
 }
 
 extension View {
-    func fontWithLineHeight(font: CustomFonts, fontSize: Double, letterSpacing: Double, lineHeight: CGFloat) -> some View {
+    func fontWithLineHeight(font: CustomFonts = .inter, fontSize: Double, letterSpacing: Double, lineHeight: CGFloat) -> some View {
         ModifiedContent(content: self, modifier: FontWithLineHeight(font: font, fontSize: fontSize, letterSpacing: letterSpacing, lineHeight: lineHeight))
     }
 }
