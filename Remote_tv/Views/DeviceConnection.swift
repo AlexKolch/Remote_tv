@@ -37,15 +37,15 @@ struct DeviceConnection: View {
             .frame(height: 56)
 //            .background(.white)
             
-            VStack(alignment: .center) {
-                Text("Searching for devices")
+            VStack(alignment: .center, spacing: 16.0) {
+                Text("Searching for devices") //!!!CДЕЛАТЬ РАЗНЫЕ СОСТОЯНИЯ!!!!!
                     .foregroundStyle(.white.opacity(0.6))
                     .fontWithLineHeight(fontSize: 16, letterSpacing: 0.02, lineHeight: 22)
                     .frame(maxWidth: .infinity)
 //                    .background(.gray)
 
-                   Spacer()
                 if viewModel.devices.isEmpty {
+                    Spacer()
                     Image(.loader)
                         .resizable()
                         .frame(width: 48, height: 48)
@@ -55,16 +55,20 @@ struct DeviceConnection: View {
                                 degree += 360
                             }
                         }
+                    Spacer()
                 } else {
-                    VStack {
+                    VStack(spacing: 12.0) {
                         ForEach(viewModel.devices, id: \.self) { device in
-                            Text(device)
-                                .foregroundStyle(.white)
+                            DeviceCard(name: device)
+                                .clipShape(.buttonBorder)
+                           
                         }
                     }
+                    .frame(maxHeight: .infinity, alignment: .top)
+//                    .background(.yellow)
                 }
                 
-                Spacer()
+         
                 Text("Smart TV and your device must be connected to the same Wi-Fi network")
                     .foregroundStyle(.white.opacity(0.6))
                     .font(FontBuilder.description.font)
@@ -80,9 +84,7 @@ struct DeviceConnection: View {
             }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.bglevel1)
-//        .onAppear {
-//            viewModel.
-//        }
+
     }
 }
 
