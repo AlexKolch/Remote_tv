@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @State var onboardingState: Int = 2
+    @State var onboardingState: Int = 3
     @State var toggleIsOn: Bool = false
     @EnvironmentObject var vm: ViewModel
     
@@ -131,6 +131,7 @@ struct OnboardingSheet: View {
     @State var isPaywall = false
     @Binding var toggleIsOn: Bool
     @Binding var onboardingState: Int
+//    @State var purchaseState: Bool = false
     
     var title: String
     var description: String
@@ -188,6 +189,7 @@ struct OnboardingSheet: View {
                 }
             }
 
+
             if isPaywall {
                 Image(.loader)
                     .resizable()
@@ -196,6 +198,9 @@ struct OnboardingSheet: View {
                     .onAppear {
                         withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
                             vm.startPayment()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                isPaywall = false
+                            }
                         }
                     }
             } else {

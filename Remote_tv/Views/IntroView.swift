@@ -14,7 +14,7 @@ struct IntroView: View {
     var body: some View {
               
         if vm.currentUserSignedIn {
-//                  ProfileView()
+            DeviceConnection()
 //                      .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .top)))
               } else {
                   OnboardingView()
