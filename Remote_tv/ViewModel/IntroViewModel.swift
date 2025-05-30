@@ -15,7 +15,11 @@ final class IntroViewModel: ObservableObject {
     
     @MainActor func requestAppReview() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            AppStore.requestReview(in: windowScene)
+            if #available(iOS 16.0, *) {
+                AppStore.requestReview(in: windowScene)
+            } else {
+                // Fallback on earlier versions
+            }
         } else {
             //Сделать в будущем. Если не получилось – открываем App Store
         }

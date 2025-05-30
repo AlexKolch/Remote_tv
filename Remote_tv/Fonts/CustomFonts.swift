@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum CustomFonts: String {
-    case inter = "Inter"
-}
-
 extension Font {
     static func custom(_ customFonts: CustomFonts, size: CGFloat) -> Font {
         Font.custom(customFonts.rawValue, fixedSize: size)
@@ -49,6 +45,7 @@ extension FontBuilder {
 
 
 
+@available(iOS 16.0, *)
 struct FontWithLineHeight: ViewModifier {
     let font: CustomFonts
     let fontSize: Double
@@ -59,14 +56,17 @@ struct FontWithLineHeight: ViewModifier {
         let uiFont = UIFont(name: font.rawValue, size: fontSize) ?? .systemFont(ofSize: fontSize)
         content
             .font(Font(uiFont))
-            .tracking(fontSize * letterSpacing)
+            .kerning(fontSize * letterSpacing)
             .lineSpacing(lineHeight - uiFont.lineHeight)
             .padding(.vertical, (lineHeight - uiFont.lineHeight) / 2)
     }
 }
 
+@available(iOS 16.0, *)
 extension View {
     func fontWithLineHeight(font: CustomFonts = .inter, fontSize: Double, letterSpacing: Double, lineHeight: CGFloat) -> some View {
         ModifiedContent(content: self, modifier: FontWithLineHeight(font: font, fontSize: fontSize, letterSpacing: letterSpacing, lineHeight: lineHeight))
     }
 }
+
+

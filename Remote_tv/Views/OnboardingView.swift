@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @State var onboardingState: Int = 3
+    @State var onboardingState: Int = 0
     @State var toggleIsOn: Bool = false
     @EnvironmentObject var vm: IntroViewModel
     
@@ -33,7 +33,7 @@ struct OnboardingView: View {
                         OnboardingSheet(toggleIsOn: $toggleIsOn, onboardingState: $onboardingState,
                                         title: "Remote always at hand",
                                         description: "No more wasting time looking for the remote control over and over again")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity ,alignment: .bottom)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     }
                     .onAppear {
                         vm.requestAppReview()
@@ -48,7 +48,7 @@ struct OnboardingView: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .frame(width: 12.73, height: 12.73)
-                                .bold()
+                                .font(Font.title.weight(.bold))
                                 .foregroundStyle(.white)
                                 .frame(width: 56, height: 56, alignment: .center)
                                 .offset(x: 158)
@@ -72,9 +72,10 @@ struct OnboardingView: View {
     }
 }
 
-//#Preview {
-//    OnboardingView()
-//}
+#Preview {
+    OnboardingView()
+        .environmentObject(IntroViewModel())
+}
 
 private extension OnboardingView {
     
@@ -131,7 +132,6 @@ struct OnboardingSheet: View {
     @State var isPaywall = false
     @Binding var toggleIsOn: Bool
     @Binding var onboardingState: Int
-//    @State var purchaseState: Bool = false
     
     var title: String
     var description: String
@@ -139,17 +139,22 @@ struct OnboardingSheet: View {
     var body: some View {
         VStack(spacing: 24.0) {
             VStack(alignment: .center, spacing: 16.0) {
-                Text(title)
-                    .fontWithLineHeight(font: .inter, fontSize: 28, letterSpacing: 0.02, lineHeight: 34)
-                    .bold()
-                    .foregroundStyle(.white)
+                AttributedText(text: title, fontSize: 28, fontWeight: .bold, lineHeightPercent: 100)
+                    .frame(width: 343, height: 34)
+//                Text(title)
+//                    .fontWithLineHeight(font: .inter, fontSize: 28, letterSpacing: 0.02, lineHeight: 34)
+//                    .bold()
+//                    .foregroundStyle(.white)
                 
-                Text(description)
-                    .font(FontBuilder.description.font)
-                    .tracking(FontBuilder.description.tracking)
-                    .lineSpacing(1.4)
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
+                AttributedText(text: description)
+                    .frame(width: 343, height: 46)
+              
+//                Text(description)
+//                    .font(FontBuilder.description.font)
+//                    .tracking(FontBuilder.description.tracking)
+//                    .lineSpacing(1.4)
+//                    .foregroundStyle(.white)
+//                    .multilineTextAlignment(.center)
                 
                 if onboardingState == 3 {
                         ZStack {
@@ -161,17 +166,23 @@ struct OnboardingSheet: View {
                             HStack {
                                 Toggle(isOn: $toggleIsOn) {
                                     if toggleIsOn {
-                                        Text("3-day free trial enabled")
-                                            .fontWithLineHeight(font: .inter, fontSize: 16, letterSpacing: 0.02, lineHeight: 24)
-                                            .foregroundStyle(.white)
+                                        AttributedText(text: "3-day free trial enabled")
+                                            .frame(height: 24)
+//                                        Text("3-day free trial enabled")
+//                                            .fontWithLineHeight(font: .inter, fontSize: 16, letterSpacing: 0.02, lineHeight: 24)
+//                                            .foregroundStyle(.white)
                                     } else {
                                         VStack(alignment: .leading, spacing: 0) {
-                                            Text("Not sure yet?")
-                                                .fontWithLineHeight(font: .inter, fontSize: 16, letterSpacing: 0.02, lineHeight: 22)
-                                                .foregroundStyle(.white)
-                                            Text("Enable a 3-day free trial")
-                                                .fontWithLineHeight(font: .inter, fontSize: 12, letterSpacing: 0.02, lineHeight: 17)
-                                                .foregroundStyle(.white.opacity(0.6))
+                                            AttributedText(text: "Not sure yet?", alignment: .left)
+                                                .frame(height: 22)
+//                                            Text("Not sure yet?")
+//                                                .fontWithLineHeight(font: .inter, fontSize: 16, letterSpacing: 0.02, lineHeight: 22)
+//                                                .foregroundStyle(.white)
+                                            AttributedText(text: "Enable a 3-day free trial", fontSize: 12, alignment: .left)
+                                                .frame(height: 17)
+//                                            Text("Enable a 3-day free trial")
+//                                                .fontWithLineHeight(font: .inter, fontSize: 12, letterSpacing: 0.02, lineHeight: 17)
+//                                                .foregroundStyle(.white.opacity(0.6))
                                             
                                         }
                                         .padding(.vertical, 12)
@@ -179,7 +190,9 @@ struct OnboardingSheet: View {
                                         .frame(height: 39)
                                     }
                                 }
-                                .tint(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
+                                .tint(.accentColor)
+                                .toggleStyle(GradientToggleStyle())
+//                                .tint(LinearGradient.addLinerGradient(startPoint: .leading, endPoint: .trailing))
                                 .padding(.trailing, 12)
                                 .padding(.leading, 16)
                                 
@@ -212,7 +225,7 @@ struct OnboardingSheet: View {
                     }
                 } label: {
                     Text(toggleIsOn ? "Try free" : "Continue")
-                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                         .font(.inter, size: 18).bold()
                         .frame(maxWidth: .infinity)
                         .frame(height: 64)
@@ -227,11 +240,11 @@ struct OnboardingSheet: View {
                     Link("Privacy Policy",
                          destination: URL(string: "https://docs.google.com/document/d/1wY6VO-Xg6DStAav4ywjC236OuebpvqHqjIliZdMz9LE/edit?usp=sharing")!)
                     Text("Restore")
+//                        .tracking(FontBuilder.infoBtn.tracking)
                     Link("Terms of Service",
                          destination: URL(string: "https://docs.google.com/document/d/1HOGEoKmiRYtQK_7kFne9oKCUmijPSSbhrYnzS1hzsAo/edit?usp=sharing")!)
                 }
                 .font(FontBuilder.infoBtn.font)
-                .tracking(FontBuilder.infoBtn.tracking)
                 .lineSpacing(FontBuilder.infoBtn.lineSpacing)
                 .padding(.vertical, FontBuilder.infoBtn.verticalPadding)
                 .frame(height: 40)
@@ -246,7 +259,8 @@ struct OnboardingSheet: View {
         .padding(.top, 32)
         .padding([.horizontal, .bottom], 16)
         .background(Color.bglevel1)
-        .clipShape(.rect(cornerRadii: .init(topLeading: 24, topTrailing: 24)))
+        .cornerRadius(24, corners: [.topLeft, .topRight])
+//        .clipShape(.rect(cornerRadii: .init(topLeading: 24, topTrailing: 24)))
         .overlay(alignment: .top) {
             if onboardingState == 3 {
                 blurView
@@ -268,21 +282,23 @@ extension OnboardingSheet {
                 GlassView(removeEffects: true)
                     .blur(radius: 20, opaque: true)
                )
-               .clipShape(.buttonBorder)
+               .cornerRadius(12)
 
            HStack(spacing: 12.0) {
                Image(.premium)
                    .resizable()
                    .frame(width: 24, height: 24)
                  
-               Text("Access to sleep timer, touchpad and multimedia controller")
-                   .frame(width: 275)
-                   .font(FontBuilder.description.font)
-                   .tracking(FontBuilder.description.tracking)
-                   .lineSpacing(1.4)
+               AttributedText(text: "Access to sleep timer, touchpad and multimedia controller")
+                   .frame(width: 275, height: 49)
+//               Text("Access to sleep timer, touchpad and multimedia controller")
+//                   .frame(width: 275)
+//                   .font(FontBuilder.description.font)
+//                   .tracking(FontBuilder.description.tracking)
+//                   .lineSpacing(1.4)
 //                   .environment(\._lineHeightMultiple, 1.4) //РАЗОБРАТЬСЯ С ТВ!!!!!!!!!!!!!!!!!!!!
-                   .foregroundStyle(.white)
-                   .multilineTextAlignment(.center)
+//                   .foregroundStyle(.white)
+//                   .multilineTextAlignment(.center)
                    
            }
            .frame(maxWidth: .infinity)

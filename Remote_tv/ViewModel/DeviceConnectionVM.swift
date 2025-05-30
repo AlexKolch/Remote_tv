@@ -4,7 +4,7 @@
 //
 //  Created by Алексей Колыченков on 29.05.2025.
 //
-
+import AVFoundation
 import SwiftUI
 
 final class DeviceConnectionVM: ObservableObject {
@@ -14,6 +14,12 @@ final class DeviceConnectionVM: ObservableObject {
     
     init() {
         loadDevices()
+    }
+    
+    func permissionLocalNetwork() {
+//        if AVCaptureSession.authorizationStatus(for: .video) == .authorized {
+//            
+//        }
     }
     
    private func loadDevices() {

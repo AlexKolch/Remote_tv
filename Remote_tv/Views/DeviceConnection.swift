@@ -21,29 +21,22 @@ struct DeviceConnection: View {
                     .foregroundStyle(.white)
                     .frame(width: 24, height: 24, alignment: .center)
                     .padding(16)
-//                    .background(.gray)
                 
-                Text("Device detection")
-                    .foregroundStyle(.white)
-                    .fontWithLineHeight(fontSize: 16, letterSpacing: 0.02, lineHeight: 22)
-                    .frame(maxWidth: 263)
-//                    .background(.gray)
                 
+                AttributedText(text: "Device detection", foregroundColor: .white)
+                    .frame(maxWidth: .infinity)
                 Rectangle()
                     .frame(width: 56, height: 56)
                     .hidden()
             }
             .frame(maxWidth: .infinity)
             .frame(height: 56)
-//            .background(.white)
             
             VStack(alignment: .center, spacing: 16.0) {
-                Text("Searching for devices") //!!!CДЕЛАТЬ РАЗНЫЕ СОСТОЯНИЯ!!!!!
-                    .foregroundStyle(.white.opacity(0.6))
-                    .fontWithLineHeight(fontSize: 16, letterSpacing: 0.02, lineHeight: 22)
+                AttributedText(text: "Searching for devices", foregroundColor: .white.withAlphaComponent(0.6))
                     .frame(maxWidth: .infinity)
-//                    .background(.gray)
-
+                    .frame(height: 22)
+                
                 if viewModel.devices.isEmpty {
                     Spacer()
                     Image(.loader)
@@ -60,31 +53,22 @@ struct DeviceConnection: View {
                     VStack(spacing: 12.0) {
                         ForEach(viewModel.devices, id: \.self) { device in
                             DeviceCard(name: device)
-                                .clipShape(.buttonBorder)
-                           
+                                .clipShape(.rect(cornerRadius: 12))
+                            
                         }
+                        
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
-//                    .background(.yellow)
                 }
                 
-         
-                Text("Smart TV and your device must be connected to the same Wi-Fi network")
-                    .foregroundStyle(.white.opacity(0.6))
-                    .font(FontBuilder.description.font)
-                    .tracking(FontBuilder.description.tracking)
-                    .lineSpacing(1.4)
-                    .multilineTextAlignment(.center)
-                    .frame(width: 343)
-//                    .background(.gray)
+                AttributedText(text: "Smart TV and your device must be connected to the same Wi-Fi network", fontWeight: .regular, foregroundColor: .white.withAlphaComponent(0.6), lineHeightPercent: 140, letterSpacingPercent: 2)
+                    .frame(width: 343, height: 46)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
-//            .background(.yellow)
-            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.bglevel1)
-
     }
 }
 
