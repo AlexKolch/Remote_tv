@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+enum StateScreen: String {
+    case searching, selecting, connection, connected, failure
+}
 
 struct DeviceConnection: View {
     @StateObject var viewModel: DeviceConnectionVM = .init()
     @State var degree: Double = 0.0
+    @State private var currentStateScreen: StateScreen = .searching
+    @State private var selectedDevice: Device? = nil
+    @State private var isSelect: Bool = false
+    
     
     var body: some View {
         VStack(spacing: 8.0) {
@@ -22,7 +29,6 @@ struct DeviceConnection: View {
                     .frame(width: 24, height: 24, alignment: .center)
                     .padding(16)
                 
-                
                 AttributedText(text: "Device detection", foregroundColor: .white)
                     .frame(maxWidth: .infinity)
                 Rectangle()
@@ -33,7 +39,7 @@ struct DeviceConnection: View {
             .frame(height: 56)
             
             VStack(alignment: .center, spacing: 16.0) {
-                AttributedText(text: "Searching for devices", foregroundColor: .white.withAlphaComponent(0.6))
+                AttributedText(text: textFor(state: currentStateScreen), foregroundColor: .white.withAlphaComponent(0.6))
                     .frame(maxWidth: .infinity)
                     .frame(height: 22)
                 
@@ -51,14 +57,23 @@ struct DeviceConnection: View {
                     Spacer()
                 } else {
                     VStack(spacing: 12.0) {
-                        ForEach(viewModel.devices, id: \.self) { device in
-                            DeviceCard(name: device)
+                        ForEach(viewModel.devices) { device in
+                            DeviceCard(device: device)
                                 .clipShape(.rect(cornerRadius: 12))
-                            
+                                .onTapGesture {
+                                    print(device)
+                                    
+                                    //                                    updated(at: device)
+                                    self.isSelect = true
+                                    currentStateScreen = nextState(after: currentStateScreen)
+                                }
                         }
                         
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
+                    .onAppear {
+                        currentStateScreen = nextState(after: currentStateScreen)
+                    }
                 }
                 
                 AttributedText(text: "Smart TV and your device must be connected to the same Wi-Fi network", fontWeight: .regular, foregroundColor: .white.withAlphaComponent(0.6), lineHeightPercent: 140, letterSpacingPercent: 2)
@@ -69,9 +84,45 @@ struct DeviceConnection: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.bglevel1)
+        .onAppear {
+            NetworkPermissionHelper.shared.requestLocalNetworkPermission()
+        }
     }
 }
 
 #Preview {
     DeviceConnection()
+}
+
+extension DeviceConnection {
+    
+    func textFor(state: StateScreen) -> String {
+        switch state {
+        case .searching:
+            return "Searching for devices"
+        case .selecting:
+            return "Select the device for connection"
+        case .connection:
+            return "Connecting your device"
+        case .connected:
+            return "Device connected"
+        case .failure:
+            return "Couldn’t find your devices"
+        }
+    }
+    
+    func nextState(after state: StateScreen) -> StateScreen {
+        switch state {
+        case .searching:
+            return .selecting
+        case .selecting:
+            return .connection
+        case .connection:
+            return .connected
+        case .connected:
+            return .connected
+        case .failure:
+            return .searching
+        }
+    }
 }

@@ -9,33 +9,48 @@ import SwiftUI
 
 final class DeviceConnectionVM: ObservableObject {
     
+    enum Status: String {
+        case searching = "Searching for devices"
+        case selecting = "Select the device for connection"
+        case connection = "Connecting your device"
+        case connected = "Device connected"
+        case failure = "Couldn’t find your devices"
+    }
+    
     let userDefaults = UserDefaults.standard
-   @Published var devices: [String] = []
+    @Published var devices: [Device] = []
+    @Published var status: Status = .searching
     
     init() {
         loadDevices()
     }
+
     
-    func permissionLocalNetwork() {
-//        if AVCaptureSession.authorizationStatus(for: .video) == .authorized {
-//            
-//        }
-    }
-    
-   private func loadDevices() {
-       if let fetchedDevices = userDefaults.stringArray(forKey: "devices") {
-           devices = fetchedDevices
-       } else {
-           DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-               self.devices.append(contentsOf: [
-                "Smart LG TV",
-                "LG UHD UF",
-               ])
-               DispatchQueue.global().async {
-                   self.userDefaults.set(self.devices, forKey: "devices")
-               }
-           }
-       }
+    private func loadDevices() {
+        if let devicesData = userDefaults.data(forKey: "devices") {
+            do {
+                let decoder = JSONDecoder()
+                let fetchedDevices = try decoder.decode([Device].self, from: devicesData)
+                self.devices = fetchedDevices
+            } catch {
+                print("Fetching devices failed: \(error)")
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                self?.devices.append(contentsOf: [
+                    Device(name: "Smart LG TV"),
+                    Device(name: "LG UHD UF")
+                ])
+                
+                do {
+                    let encoder = JSONEncoder()
+                    let deviceData = try encoder.encode(self?.devices)
+                    self?.userDefaults.setValue(deviceData, forKey: "devices")
+                } catch {
+                    print("Saving devices failed: \(error)")
+                }
+            }
+        }
     }
     
 }
