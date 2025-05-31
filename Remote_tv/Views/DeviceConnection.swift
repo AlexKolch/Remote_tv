@@ -76,7 +76,7 @@ struct DeviceConnection: View {
                     }
                 }
                 
-                AttributedText(text: "Smart TV and your device must be connected to the same Wi-Fi network", fontWeight: .regular, foregroundColor: .white.withAlphaComponent(0.6), lineHeightPercent: 140, letterSpacingPercent: 2)
+                AttributedText(text: "Smart TV and your device must be connected to the same Wi-Fi network", fontWeight: .inter, foregroundColor: .white.withAlphaComponent(0.6), lineHeightPercent: 140, letterSpacingPercent: 2)
                     .frame(width: 343, height: 46)
             }
             .padding(.horizontal, 16)

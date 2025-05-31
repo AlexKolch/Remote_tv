@@ -9,14 +9,13 @@ import SwiftUI
 
 enum CustomFonts: String {
     case inter = "Inter"
-    case regular = "Inter-Regular"
     case bold = "Inter-Bold"
 }
 
 struct AttributedText: UIViewRepresentable {
     let text: String
     var fontSize: CGFloat = 16.0
-    var fontWeight: CustomFonts = .regular
+    var fontWeight: CustomFonts = .inter
     var foregroundColor: UIColor = .white
     
     // Параметры из Figma

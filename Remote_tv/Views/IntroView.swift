@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct IntroView: View {
-    @EnvironmentObject var vm: IntroViewModel
+    @StateObject var viewModel = IntroViewModel()
     
     var body: some View {
-        if vm.currentUserSignedIn {
+        if viewModel.currentUserSignedIn {
             DeviceConnection()
         } else {
             OnboardingView()
+                .environmentObject(viewModel)
         }
     }
 }

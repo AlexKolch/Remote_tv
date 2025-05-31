@@ -9,13 +9,10 @@ import SwiftUI
 
 @main
 struct Remote_tvApp: App {
-    @StateObject var vm = IntroViewModel()
     
     var body: some Scene {
         WindowGroup {
             IntroView()
-                .environmentObject(vm)
-//            OnboardingView()
         }
     }
 }
